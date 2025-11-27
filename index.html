@@ -1,1 +1,391 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตารางรถรับส่งสนามบิน - Airport Transfer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- CSS Styles --- */
+        :root {
+            --primary-color: #004e92; /* น้ำเงินเข้ม สื่อถึงการเดินทาง/ทางการ */
+            --accent-color: #ff6b6b;  /* สีส้มแดง สำหรับจุดเด่น */
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
+        }
 
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        /* --- Summary Section (สรุปยอด) --- */
+        .summary-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 15px;
+            border-left: 5px solid var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .summary-info h3 { margin: 0; font-size: 18px; color: var(--primary-color); }
+        .summary-info p { margin: 5px 0 0; font-size: 14px; color: #777; }
+        .summary-count { font-size: 24px; font-weight: bold; color: #333; }
+
+        /* --- Controls (ค้นหา + กรอง) --- */
+        .controls-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .search-box { flex: 3; min-width: 250px; position: relative; }
+        .filter-box { flex: 1; min-width: 180px; }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: 'Sarabun', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 78, 146, 0.1);
+        }
+
+        /* --- Card List (รายการ) --- */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Responsive Grid */
+            gap: 20px;
+        }
+
+        .transfer-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s;
+            border: 1px solid #eee;
+        }
+
+        .transfer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        /* แถบสีด้านบนการ์ด แยกตามรอบรถ */
+        .card-top-strip {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background-color: var(--primary-color);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .time-badge {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .van-badge {
+            font-size: 13px;
+            color: #666;
+            background: #f5f5f5;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .user-info { margin-bottom: 15px; }
+        .user-name { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 4px; }
+        .user-org { font-size: 14px; color: #666; }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fafafa;
+            margin: -20px -20px -20px -20px; /* ขยายให้เต็มขอบ */
+            padding: 12px 20px;
+            margin-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .car-plate-badge {
+            background-color: #333;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-family: monospace;
+            font-size: 14px;
+            letter-spacing: 1px;
+            border: 2px solid #000;
+        }
+
+        .destination { font-size: 13px; color: #888; display: flex; align-items: center; gap: 5px; }
+
+        .no-result {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 40px;
+            color: #999;
+            background: #fff;
+            border-radius: 12px;
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1><i class="fas fa-plane-departure"></i> รายการรถไปส่งสนามบิน</h1>
+        <p class="subtitle">ตรวจสอบรายชื่อ รอบรถ และทะเบียนรถ (Airport Transfer Schedule)</p>
+
+        <div id="summarySection" class="summary-container">
+            </div>
+
+        <div class="controls-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="form-control" placeholder="🔍 ค้นหาชื่อ, หน่วยงาน หรือ ทะเบียนรถ...">
+            </div>
+            <div class="filter-box">
+                <select id="timeFilter" class="form-control">
+                    <option value="">🕒 ทุกรอบเวลา</option>
+                    </select>
+            </div>
+        </div>
+
+        <div class="card-container" id="cardContainer">
+            </div>
+
+        <div id="noResult" class="no-result">
+            <i class="fas fa-search" style="font-size: 40px; margin-bottom: 10px;"></i><br>
+            ไม่พบข้อมูลที่ค้นหา
+        </div>
+    </div>
+
+    <script>
+        // --- 1. ข้อมูลตัวอย่าง (Mock Data) ---
+        // คุณสามารถนำข้อมูลจาก Excel มาแปลงเป็น JSON ใส่ตรงนี้ได้เลย
+        const transferData = [
+            { id: 1, name: "นายสมชาย ใจดี", org: "สำนักงานสาธารณสุขจังหวัดเชียงใหม่", time: "06:00", van_no: "ตู้ 1", plate: "นข 1234", dest: "ดอนเมือง" },
+            { id: 2, name: "นางสาวสมหญิง รักเรียน", org: "โรงพยาบาลขอนแก่น", time: "06:00", van_no: "ตู้ 1", plate: "นข 1234", dest: "ดอนเมือง" },
+            { id: 3, name: "นายวิชัย เก่งกาจ", org: "ศูนย์วิทยาศาสตร์การแพทย์ที่ 1", time: "06:00", van_no: "ตู้ 1", plate: "นข 1234", dest: "ดอนเมือง" },
+            { id: 4, name: "นางสาวมานี มีตา", org: "สสจ. ภูเก็ต", time: "08:30", van_no: "ตู้ 2", plate: "ฮอ 5555", dest: "สุวรรณภูมิ" },
+            { id: 5, name: "นายมานะ อดทน", org: "สสจ. ภูเก็ต", time: "08:30", van_no: "ตู้ 2", plate: "ฮอ 5555", dest: "สุวรรณภูมิ" },
+            { id: 6, name: "ดร.ชูใจ ใฝ่รู้", org: "กรมควบคุมโรค", time: "08:30", van_no: "ตู้ 3", plate: "กข 9999", dest: "ดอนเมือง" },
+            { id: 7, name: "นายปิติ ยินดี", org: "โรงพยาบาลมหาราช", time: "10:00", van_no: "ตู้ 4", plate: "ออ 1111", dest: "สุวรรณภูมิ" },
+            { id: 8, name: "นางสาวแก้วตา ขวัญใจ", org: "สสอ. เมืองนนทบุรี", time: "10:00", van_no: "ตู้ 4", plate: "ออ 1111", dest: "สุวรรณภูมิ" },
+            { id: 9, name: "นายรักชาติ ยิ่งชีพ", org: "สสจ. ยะลา", time: "13:00", van_no: "ตู้ 5", plate: "นข 1234", dest: "ดอนเมือง" },
+            { id: 10, name: "นางสาวสวยใส ไร้สิว", org: "สสจ. ปัตตานี", time: "13:00", van_no: "ตู้ 5", plate: "นข 1234", dest: "ดอนเมือง" },
+            { id: 11, name: "นายเข้ม แข็งแรง", org: "รพ. สต. บ้านนา", time: "15:30", van_no: "ตู้ 6", plate: "ฮอ 8888", dest: "สุวรรณภูมิ" },
+            { id: 12, name: "นางสาวหวานใจ", org: "ศูนย์วิทย์ฯ สงขลา", time: "15:30", van_no: "ตู้ 6", plate: "ฮอ 8888", dest: "สุวรรณภูมิ" }
+        ];
+
+        // --- 2. ตัวแปรอ้างอิง HTML Elements ---
+        const cardContainer = document.getElementById('cardContainer');
+        const searchInput = document.getElementById('searchInput');
+        const timeFilter = document.getElementById('timeFilter');
+        const summarySection = document.getElementById('summarySection');
+        const noResultMsg = document.getElementById('noResult');
+
+        // --- 3. ฟังก์ชันการทำงาน (Logic) ---
+
+        // ฟังก์ชันสร้างรายการตัวเลือก "รอบรถ" (Dropdown)
+        function populateTimeFilter() {
+            // ดึงรอบเวลาทั้งหมดที่ไม่ซ้ำกัน และเรียงลำดับ
+            const times = [...new Set(transferData.map(item => item.time))].sort();
+            
+            times.forEach(time => {
+                const option = document.createElement('option');
+                option.value = time;
+                option.textContent = `รอบ ${time} น.`;
+                timeFilter.appendChild(option);
+            });
+        }
+
+        // ฟังก์ชันสรุปยอดผู้เดินทาง (Summary)
+        function renderSummary() {
+            const summary = {};
+            
+            // นับจำนวนคนในแต่ละรอบ
+            transferData.forEach(item => {
+                if (!summary[item.time]) summary[item.time] = 0;
+                summary[item.time]++;
+            });
+
+            summarySection.innerHTML = '';
+            // เรียงลำดับเวลา
+            Object.keys(summary).sort().forEach(time => {
+                const count = summary[time];
+                const card = `
+                    <div class="summary-card">
+                        <div class="summary-info">
+                            <h3><i class="far fa-clock"></i> รอบ ${time} น.</h3>
+                            <p>จำนวนผู้เดินทาง</p>
+                        </div>
+                        <div class="summary-count">${count} <span style="font-size:14px; font-weight:normal;">คน</span></div>
+                    </div>
+                `;
+                summarySection.innerHTML += card;
+            });
+        }
+
+        // ฟังก์ชันแสดงการ์ด (Render Cards)
+        function renderCards(data) {
+            cardContainer.innerHTML = '';
+            
+            if (data.length === 0) {
+                noResultMsg.style.display = 'block';
+                return;
+            } else {
+                noResultMsg.style.display = 'none';
+            }
+
+            data.forEach(item => {
+                // กำหนดสีแถบด้านบนตามช่วงเวลา (เช้า/บ่าย) เพื่อความสวยงาม
+                let stripColor = '#004e92'; // Default Blue
+                const hour = parseInt(item.time.split(':')[0]);
+                if (hour < 12) stripColor = '#28a745'; // เช้า - เขียว
+                else if (hour < 15) stripColor = '#ffc107'; // บ่ายต้น - เหลือง
+                else stripColor = '#fd7e14'; // เย็น - ส้ม
+
+                const cardHtml = `
+                    <div class="transfer-card">
+                        <div class="card-top-strip" style="background-color: ${stripColor};"></div>
+                        
+                        <div class="card-header">
+                            <div class="time-badge">
+                                <i class="far fa-clock"></i> ${item.time} น.
+                            </div>
+                            <div class="van-badge">
+                                <i class="fas fa-shuttle-van"></i> ${item.van_no}
+                            </div>
+                        </div>
+
+                        <div class="user-info">
+                            <div class="user-name">${item.name}</div>
+                            <div class="user-org">
+                                <i class="fas fa-building" style="color:#ccc; width:20px;"></i> ${item.org}
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="destination">
+                                <i class="fas fa-map-marker-alt text-danger"></i> ไปส่ง: ${item.dest}
+                            </div>
+                            <div class="car-plate-badge">
+                                ${item.plate}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                cardContainer.innerHTML += cardHtml;
+            });
+        }
+
+        // ฟังก์ชันกรองและค้นหา (Filter & Search Logic)
+        function filterData() {
+            const searchText = searchInput.value.toLowerCase();
+            const selectedTime = timeFilter.value;
+
+            const filtered = transferData.filter(item => {
+                // เงื่อนไข 1: ค้นหาด้วยข้อความ (ชื่อ, หน่วยงาน, ทะเบียน)
+                const textMatch = 
+                    item.name.toLowerCase().includes(searchText) ||
+                    item.org.toLowerCase().includes(searchText) ||
+                    item.plate.toLowerCase().includes(searchText);
+                
+                // เงื่อนไข 2: ตรงกับรอบเวลาที่เลือก (ถ้ามีการเลือก)
+                const timeMatch = selectedTime === '' || item.time === selectedTime;
+
+                return textMatch && timeMatch;
+            });
+            
+            // เรียงลำดับตามเวลา แล้วค่อยตามชื่อ
+            filtered.sort((a, b) => {
+                if (a.time !== b.time) return a.time.localeCompare(b.time);
+                return a.name.localeCompare(b.name, 'th');
+            });
+
+            renderCards(filtered);
+        }
+
+        // --- 4. เริ่มทำงาน (Initialization) ---
+        populateTimeFilter();
+        renderSummary();
+        renderCards(transferData); // แสดงข้อมูลทั้งหมดตอนแรก
+
+        // --- Event Listeners ---
+        searchInput.addEventListener('input', filterData);
+        timeFilter.addEventListener('change', filterData);
+
+    </script>
+</body>
+</html>
