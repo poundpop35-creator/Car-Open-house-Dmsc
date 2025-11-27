@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ตารางรถรับส่งสนามบิน - Airport Transfer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* --- CSS Styles --- */
         :root {
-            --primary-color: #1a73e8; /* สีหลัก (น้ำเงิน) */
-            --bg-color: #f0f4f8;      /* สีพื้นหลัง */
+            --primary-color: #1a73e8;
+            --bg-color: #f0f4f8;
             --card-bg: #ffffff;
             --text-main: #202124;
             --text-sub: #5f6368;
-            --alert-color: #d93025;   /* สีแดงสำหรับหมายเหตุ */
+            --alert-color: #c5221f; /* แดงเข้มขึ้นให้อ่านง่าย */
             --shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
         }
 
@@ -36,7 +36,7 @@
             color: var(--primary-color);
             text-align: center;
             margin-bottom: 5px;
-            font-weight: 700;
+            font-weight: 800;
             font-size: 28px;
         }
 
@@ -83,7 +83,7 @@
         .form-control {
             width: 100%;
             padding: 12px 15px;
-            font-size: 15px;
+            font-size: 16px;
             border: 1px solid #dfe1e5;
             border-radius: 8px;
             font-family: 'Sarabun', sans-serif;
@@ -99,7 +99,7 @@
         /* --- Cards --- */
         .card-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); /* ขยายความกว้างการ์ดนิดหน่อย */
             gap: 20px;
         }
 
@@ -119,25 +119,32 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
-        /* Header: รอบรถ */
+        /* --- Header ปรับปรุงใหม่ --- */
         .card-header {
-            padding: 12px 20px;
+            padding: 15px 20px; /* เพิ่ม Padding */
             color: white;
-            font-weight: 700;
-            font-size: 15px;
+            font-weight: 800; /* ตัวหนามาก */
+            font-size: 22px;  /* ตัวใหญ่สะใจ */
             display: flex;
             justify-content: space-between;
             align-items: center;
+            line-height: 1.2;
         }
 
-        /* Body: ข้อมูลส่วนตัว */
+        .round-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Body */
         .card-body {
             padding: 20px;
             flex-grow: 1;
         }
 
         .user-name {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: #333;
             margin-bottom: 5px;
@@ -155,45 +162,48 @@
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
             background: #f8f9fa;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 10px;
         }
 
         .info-item label {
             display: block;
-            font-size: 11px;
+            font-size: 12px;
             color: #888;
             margin-bottom: 2px;
         }
 
         .info-item span {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 600;
             color: var(--text-main);
         }
 
-        .flight-time { color: var(--primary-color) !important; }
+        .flight-time { color: var(--primary-color) !important; font-size: 18px !important; }
 
-        /* Footer: หมายเหตุ */
+        /* --- Footer ปรับปรุงใหม่ --- */
         .card-footer {
-            background-color: #fce8e6; /* พื้นหลังสีแดงอ่อน */
-            padding: 10px 20px;
-            font-size: 13px;
+            background-color: #ffebe9; /* พื้นหลังแดงอ่อน */
+            padding: 15px 20px; /* เพิ่ม Padding */
+            font-size: 18px; /* ตัวใหญ่ */
             color: var(--alert-color);
-            font-weight: 600;
+            font-weight: 800; /* ตัวหนา */
             display: flex;
             align-items: center;
-            gap: 8px;
-            border-top: 1px solid #fad2cf;
+            gap: 10px;
+            border-top: 1px solid #f5c2c0;
         }
 
         .seq-badge {
-            background: rgba(255,255,255,0.2);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 12px;
+            background: rgba(255,255,255,0.25);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 14px;
+            min-width: 30px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.4);
         }
 
         .no-result {
@@ -204,6 +214,12 @@
             background: #fff;
             border-radius: 12px;
             display: none;
+        }
+
+        /* รองรับมือถือ */
+        @media (max-width: 480px) {
+            .card-header { font-size: 18px; } /* ลดขนาดนิดนึงบนมือถือกันตกบรรทัด */
+            .card-footer { font-size: 16px; }
         }
 
     </style>
@@ -222,13 +238,13 @@
             </div>
             <div class="filter-box">
                 <select id="roundFilter" class="form-control">
-                    <option value="">🕒 ทุกรอบเดินทาง (All Rounds)</option>
-                    </select>
+                    <option value="">🕒 ทุกรอบเดินทาง</option>
+                </select>
             </div>
             <div class="filter-box">
                 <select id="carFilter" class="form-control">
-                    <option value="">🚐 ทุกคัน (All Cars)</option>
-                     </select>
+                    <option value="">🚐 ทุกคัน</option>
+                </select>
             </div>
         </div>
 
@@ -292,13 +308,10 @@
         const noResultMsg = document.getElementById('noResult');
 
         // --- 3. ฟังก์ชันจัดรูปแบบเวลา (14.5 -> 14:50 น.) ---
-        // สมมติฐาน: ข้อมูลมาแบบทศนิยม 14.5 คือ 14:50, 16.35 คือ 16:35
         function formatFlightTime(val) {
             if (!val) return "-";
             const numVal = parseFloat(val);
-            // แปลงทศนิยม 2 ตำแหน่งเป็น string
             let s = numVal.toFixed(2);
-            // เปลี่ยนจุดเป็น colon
             return s.replace('.', ':') + " น.";
         }
 
@@ -307,7 +320,7 @@
             if (roundStr.includes("รอบที่ 1")) return "#4285F4"; // Blue
             if (roundStr.includes("รอบที่ 2")) return "#FBBC05"; // Yellow/Orange
             if (roundStr.includes("รอบที่ 3")) return "#34A853"; // Green
-            return "#999"; // Default
+            return "#999"; 
         }
 
         // --- 5. Prepare Dropdown Filters ---
@@ -367,13 +380,15 @@
                 
                 // กำหนดสีหัวการ์ด
                 const headerColor = getRoundColor(roundStr);
-                // ปรับสีตัวอักษรถ้าพื้นหลังเหลือง
                 const headerTextColor = (headerColor === "#FBBC05") ? "#333" : "#fff";
 
                 const html = `
                     <div class="guest-card">
                         <div class="card-header" style="background-color: ${headerColor}; color: ${headerTextColor};">
-                            <span><i class="far fa-clock"></i> ${roundStr.split('(')[0].trim()}</span>
+                            <div class="round-info">
+                                <i class="far fa-clock"></i> 
+                                <span>${roundStr}</span>
+                            </div>
                             <span class="seq-badge">#${seq}</span>
                         </div>
                         
@@ -401,7 +416,7 @@
                         </div>
 
                         <div class="card-footer">
-                            <i class="fas fa-exclamation-circle"></i>
+                            <i class="fas fa-exclamation-circle" style="font-size: 20px;"></i>
                             <span>${remark}</span>
                         </div>
                     </div>
